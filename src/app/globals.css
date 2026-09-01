@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+:root {
+  --flago-dark: #25282a;
+  --flago-red: #d22630;
+  --flago-yellow: #ffa300;
+  --flago-white: #ffffff;
+  --flago-light-gray: #f2f2f2;
+  --background: #ffffff;
+  --foreground: #25282a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-flago-dark: var(--flago-dark);
+  --color-flago-red: var(--flago-red);
+  --color-flago-yellow: var(--flago-yellow);
+  --color-flago-light-gray: var(--flago-light-gray);
+  --font-heading: var(--font-inter);
+  --font-sans: var(--font-montserrat);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-montserrat), "Raleway", "Open Sans", sans-serif;
+}
