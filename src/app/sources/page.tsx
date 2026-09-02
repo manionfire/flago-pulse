@@ -1,10 +1,35 @@
 import { Header } from "@/components/header";
+import { NotConfigured, LoadError } from "@/components/setup-states";
 import { getSourceRegistry } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function SourcesPage() {
-  const sourceList = await getSourceRegistry();
+  if (!process.env.DATABASE_URL) {
+    return (
+      <>
+        <Header />
+        <main className="flex-1 mx-auto max-w-6xl w-full px-6 py-10">
+          <NotConfigured />
+        </main>
+      </>
+    );
+  }
+
+  let sourceList: Awaited<ReturnType<typeof getSourceRegistry>>;
+
+  try {
+    sourceList = await getSourceRegistry();
+  } catch (err) {
+    return (
+      <>
+        <Header />
+        <main className="flex-1 mx-auto max-w-6xl w-full px-6 py-10">
+          <LoadError message={err instanceof Error ? err.message : String(err)} />
+        </main>
+      </>
+    );
+  }
 
   return (
     <>

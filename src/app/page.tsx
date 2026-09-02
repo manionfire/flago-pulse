@@ -1,16 +1,43 @@
 import { Header } from "@/components/header";
 import { MarketTemperature } from "@/components/market-temperature";
 import { SignalCard } from "@/components/signal-card";
+import { NotConfigured, LoadError } from "@/components/setup-states";
 import { getMarketTemperature, getSignalCounts, getTopSignals } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const [temperature, signalList, totalSignals] = await Promise.all([
-    getMarketTemperature(),
-    getTopSignals(20),
-    getSignalCounts(),
-  ]);
+  if (!process.env.DATABASE_URL) {
+    return (
+      <>
+        <Header />
+        <main className="flex-1 mx-auto max-w-6xl w-full px-6 py-10">
+          <NotConfigured />
+        </main>
+      </>
+    );
+  }
+
+  let temperature: Awaited<ReturnType<typeof getMarketTemperature>>;
+  let signalList: Awaited<ReturnType<typeof getTopSignals>>;
+  let totalSignals: number;
+
+  try {
+    [temperature, signalList, totalSignals] = await Promise.all([
+      getMarketTemperature(),
+      getTopSignals(20),
+      getSignalCounts(),
+    ]);
+  } catch (err) {
+    return (
+      <>
+        <Header />
+        <main className="flex-1 mx-auto max-w-6xl w-full px-6 py-10">
+          <LoadError message={err instanceof Error ? err.message : String(err)} />
+        </main>
+      </>
+    );
+  }
 
   const topFive = signalList.slice(0, 5);
   const rest = signalList.slice(5);
